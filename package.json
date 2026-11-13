@@ -1,0 +1,22 @@
+{
+  "name": "the-brad",
+  "version": "1.0.0",
+  "description": "Anchor — iOS-native feeling PWA for short-term memory support and ADHD focus",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "input-switch-polyfill": "^1.0.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Anchor — Memory & Focus",
+  "short_name": "Anchor",
+  "description": "Gentle, zero-friction daily memory anchors, timestamped check-ins, and ADHD focus support.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#000000",
+  "theme_color": "#0A84FF",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Brain Dump",
+      "short_name": "Brain Dump",
+      "url": "./?action=capture",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Did I Do It?",
+      "short_name": "Did I?",
+      "url": "./?tab=did-i",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Where Did I Put It?",
+      "short_name": "Memory",
+      "url": "./?tab=memory",
+      "icons": [{ "src": "./icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
