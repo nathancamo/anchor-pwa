@@ -192,6 +192,7 @@ function renderApp(state: AnchorAppState): void {
   } else if (activeTab === 'memory') {
     renderVaultView(viewWrap, store, state, {
       onOpenAddMemory: () => modals.openAddMemory(),
+      onOpenAddSmartTag: () => modals.openAddSmartTag(),
       onShowToast: showToast,
     });
   } else {

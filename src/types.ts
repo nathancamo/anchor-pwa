@@ -69,6 +69,14 @@ export interface NoteItem {
   pinned: boolean;
 }
 
+export interface SmartTagItem {
+  id: string;
+  name: string;
+  attachedTo: string;
+  lastNote: string;
+  updatedAt: number;
+}
+
 export interface AppSettings {
   userName: string;
   soundEnabled: boolean;
@@ -89,5 +97,6 @@ export interface AnchorAppState {
   memories: MemoryItem[];
   routines: Routine[];
   notes: NoteItem[];
+  smartTags: SmartTagItem[];
   settings: AppSettings;
 }

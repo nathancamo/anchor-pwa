@@ -12,6 +12,7 @@ export interface ModalController {
   openGuidedRoutine: (routine: Routine) => void;
   openAddCheckIn: () => void;
   openAddMemory: () => void;
+  openAddSmartTag: () => void;
   openSettings: () => void;
   openInstallShare: () => void;
 }
@@ -125,6 +126,22 @@ export function mountModals(
     <dialog id="sheet-install" class="ios-sheet" closedby="any" aria-labelledby="sheet-install-title">
       <div class="sheet-inner" id="sheet-install-body"></div>
     </dialog>
+
+    <dialog id="sheet-add-tag" class="ios-sheet" closedby="any" aria-labelledby="sheet-tag-title">
+      <div class="sheet-inner">
+        <div class="sheet-grabber" aria-hidden="true"></div>
+        <div class="sheet-header">
+          <h2 id="sheet-tag-title" class="sheet-title">Add Smart Tag (Find Hub)</h2>
+          <form method="dialog"><button class="ios-btn ios-btn-gray ios-btn-sm" value="cancel">Close</button></form>
+        </div>
+        <form id="form-add-tag" style="display:flex; flex-direction:column; gap:10px;">
+          <input id="tag-name" class="ios-input" type="text" placeholder="Tag name (e.g. Temu Smart Tag)" autofocus required />
+          <input id="tag-attached" class="ios-input" type="text" placeholder="Attached to (e.g. Wallet, Backpack, Car Keys)" required />
+          <input id="tag-note" class="ios-input" type="text" placeholder="Optional note (e.g. Yellow silicone case)" />
+          <button type="submit" class="ios-btn ios-btn-primary">Save Smart Tag</button>
+        </form>
+      </div>
+    </dialog>
   `;
 
   const dCapture = root.querySelector<HTMLDialogElement>('#sheet-capture')!;
@@ -134,8 +151,9 @@ export function mountModals(
   const dMemory = root.querySelector<HTMLDialogElement>('#sheet-add-memory')!;
   const dSettings = root.querySelector<HTMLDialogElement>('#sheet-settings')!;
   const dInstall = root.querySelector<HTMLDialogElement>('#sheet-install')!;
+  const dTag = root.querySelector<HTMLDialogElement>('#sheet-add-tag')!;
 
-  [dCapture, dAnchor, dRoutine, dCheckIn, dMemory, dSettings, dInstall].forEach(wireDialogHelpers);
+  [dCapture, dAnchor, dRoutine, dCheckIn, dMemory, dSettings, dInstall, dTag].forEach(wireDialogHelpers);
 
   // Quick capture submit
   root.querySelector('#form-quick-capture')?.addEventListener('submit', (e) => {
@@ -211,6 +229,21 @@ export function mountModals(
     playTapConfirm(store.getState().settings.soundEnabled);
     dMemory.close('saved');
     showToast('Saved to Memory Vault');
+  });
+
+  // Add Smart Tag
+  root.querySelector('#form-add-tag')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nameEl = root.querySelector<HTMLInputElement>('#tag-name')!;
+    const attEl = root.querySelector<HTMLInputElement>('#tag-attached')!;
+    const noteEl = root.querySelector<HTMLInputElement>('#tag-note')!;
+    store.addSmartTag(nameEl.value, attEl.value, noteEl.value);
+    nameEl.value = '';
+    attEl.value = '';
+    noteEl.value = '';
+    playTapConfirm(store.getState().settings.soundEnabled);
+    dTag.close('saved');
+    showToast('Smart tag added');
   });
 
   function renderGuidedStep(routineId: string): void {
@@ -378,6 +411,7 @@ export function mountModals(
     },
     openAddCheckIn: () => dCheckIn.showModal(),
     openAddMemory: () => dMemory.showModal(),
+    openAddSmartTag: () => dTag.showModal(),
     openSettings: () => {
       renderSettingsBody();
       dSettings.showModal();

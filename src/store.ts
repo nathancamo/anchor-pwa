@@ -6,6 +6,7 @@ import type {
   MemoryItem,
   NoteItem,
   Routine,
+  SmartTagItem,
   TaskBucket,
   TaskItem,
 } from './types';
@@ -224,6 +225,15 @@ export function createDefaultState(nowMs = Date.now()): AnchorAppState {
         pinned: false,
       },
     ],
+    smartTags: [
+      {
+        id: 'tag_keys',
+        name: 'Temu Smart Tag',
+        attachedTo: 'House & Car Keys',
+        lastNote: 'Tap "Open Find Hub" to ring or see live map location',
+        updatedAt: nowMs,
+      },
+    ],
     settings: {
       userName: 'Brad',
       soundEnabled: true,
@@ -339,6 +349,7 @@ export class AnchorStore {
       memories: Array.isArray(partial.memories) ? partial.memories : def.memories,
       routines: Array.isArray(partial.routines) ? partial.routines : def.routines,
       notes: Array.isArray(partial.notes) ? partial.notes : def.notes,
+      smartTags: Array.isArray(partial.smartTags) ? partial.smartTags : def.smartTags,
     };
   }
 
@@ -634,6 +645,35 @@ export class AnchorStore {
 
   deleteNote(id: string): void {
     this.state.notes = this.state.notes.filter((n) => n.id !== id);
+    this.emit();
+  }
+
+  // --- Smart Tags (Google Find Hub) ---
+  addSmartTag(name: string, attachedTo: string, lastNote = '', nowMs = Date.now()): void {
+    const cleanName = name.trim();
+    const cleanAttached = attachedTo.trim();
+    if (!cleanName || !cleanAttached) return;
+    const tag: SmartTagItem = {
+      id: uid('tag'),
+      name: cleanName,
+      attachedTo: cleanAttached,
+      lastNote: lastNote.trim() || 'Linked to Google Find Hub',
+      updatedAt: nowMs,
+    };
+    this.state.smartTags.unshift(tag);
+    this.emit();
+  }
+
+  updateSmartTagNote(id: string, lastNote: string, nowMs = Date.now()): void {
+    const tag = this.state.smartTags.find((t) => t.id === id);
+    if (!tag) return;
+    tag.lastNote = lastNote.trim();
+    tag.updatedAt = nowMs;
+    this.emit();
+  }
+
+  deleteSmartTag(id: string): void {
+    this.state.smartTags = this.state.smartTags.filter((t) => t.id !== id);
     this.emit();
   }
 

@@ -7,6 +7,7 @@ import { escapeHtml } from '../utils/dom';
 
 export interface VaultViewCallbacks {
   onOpenAddMemory: () => void;
+  onOpenAddSmartTag: () => void;
   onShowToast: (msg: string) => void;
 }
 
@@ -40,6 +41,59 @@ export function renderVaultView(
   const voiceOk = isSpeechSupported();
 
   container.innerHTML = `
+    <section aria-labelledby="find-hub-heading">
+      <div class="section-header">
+        <h2 class="section-title" id="find-hub-heading">Smart Tags · Google Find Hub</h2>
+        <button type="button" class="section-action" id="btn-add-smart-tag">+ Add Tag</button>
+      </div>
+      <div class="ios-card ios-card-padded" style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:16px; font-weight:700;">📡 Locate or Ring Temu Smart Tag</div>
+            <div class="ios-row-meta" style="margin-top:2px;">
+              Google Find Hub is end-to-end encrypted (no 3rd-party API), so live map &amp; ring open directly in Google’s secure portal.
+            </div>
+          </div>
+          <a
+            href="https://www.google.com/android/find"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="ios-btn ios-btn-primary ios-btn-sm"
+            style="text-decoration:none;"
+          >Open Find Hub ↗</a>
+        </div>
+
+        ${
+          state.smartTags.length === 0
+            ? `<div class="empty-state" style="padding:10px 0;">No smart tags saved yet. Tap "+ Add Tag" to list what your Temu tag is attached to.</div>`
+            : `<div style="display:flex; flex-direction:column; gap:8px;">
+                ${state.smartTags
+                  .map(
+                    (tag) => `
+                  <div style="background:var(--ios-fill); border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                    <div style="min-width:0; flex:1;">
+                      <div style="font-size:15px; font-weight:700;">🏷️ ${escapeHtml(tag.name)} · ${escapeHtml(tag.attachedTo)}</div>
+                      <div class="ios-row-meta">${escapeHtml(tag.lastNote)}</div>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                      <a
+                        href="https://www.google.com/android/find"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="ios-btn ios-btn-tinted ios-btn-sm"
+                        style="text-decoration:none;"
+                      >Ring / Map</a>
+                      <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-tag="${tag.id}" aria-label="Remove ${escapeHtml(tag.name)}">✕</button>
+                    </div>
+                  </div>
+                `
+                  )
+                  .join('')}
+              </div>`
+        }
+      </div>
+    </section>
+
     <section aria-labelledby="car-stamp-heading">
       <div class="section-header">
         <h2 class="section-title" id="car-stamp-heading">Quick Car Parking Stamp</h2>
@@ -153,6 +207,15 @@ export function renderVaultView(
       </div>
     </section>
   `;
+
+  container.querySelector('#btn-add-smart-tag')?.addEventListener('click', () => cb.onOpenAddSmartTag());
+
+  container.querySelectorAll<HTMLButtonElement>('[data-del-tag]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      store.deleteSmartTag(btn.dataset.delTag!);
+      cb.onShowToast('Removed smart tag');
+    });
+  });
 
   container.querySelectorAll<HTMLButtonElement>('[data-car-preset]').forEach((btn) => {
     btn.addEventListener('click', () => {
