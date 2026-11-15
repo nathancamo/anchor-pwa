@@ -42,6 +42,19 @@ export function isTimestampInLogicalToday(
   return getLogicalDateKey(ts, resetHour) === getLogicalDateKey(nowMs, resetHour);
 }
 
+export function getTimerRemainingSec(
+  timer: AnchorAppState['timer'],
+  nowMs = Date.now()
+): number {
+  if (!timer.running) {
+    return Math.max(0, Math.ceil(timer.remainingSec));
+  }
+  if (timer.deadlineAt !== null) {
+    return Math.max(0, Math.ceil((timer.deadlineAt - nowMs) / 1000));
+  }
+  return Math.max(0, Math.ceil(timer.remainingSec));
+}
+
 export function formatTimeShort(ts: number): string {
   return new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
@@ -74,6 +87,7 @@ export function createDefaultState(nowMs = Date.now()): AnchorAppState {
       remainingSec: 15 * 60,
       running: false,
       startedAt: null,
+      deadlineAt: null,
       label: '15m Focus Sprint',
     },
     tasks: [
@@ -313,6 +327,7 @@ type Listener = (state: AnchorAppState) => void;
 export class AnchorStore {
   private state: AnchorAppState;
   private listeners = new Set<Listener>();
+  private revision = 0;
 
   constructor(initial?: AnchorAppState) {
     this.state = initial ?? this.loadSync();
@@ -338,11 +353,15 @@ export class AnchorStore {
 
   private mergeWithDefaults(partial: Partial<AnchorAppState>): AnchorAppState {
     const def = createDefaultState();
+    const timer = { ...def.timer, ...(partial.timer ?? {}) };
+    if (timer.running && timer.deadlineAt === null) {
+      timer.deadlineAt = Date.now() + timer.remainingSec * 1000;
+    }
     return {
       ...def,
       ...partial,
       anchor: { ...def.anchor, ...(partial.anchor ?? {}) },
-      timer: { ...def.timer, ...(partial.timer ?? {}) },
+      timer,
       settings: { ...def.settings, ...(partial.settings ?? {}) },
       tasks: Array.isArray(partial.tasks) ? partial.tasks : def.tasks,
       checkIns: Array.isArray(partial.checkIns) ? partial.checkIns : def.checkIns,
@@ -354,8 +373,9 @@ export class AnchorStore {
   }
 
   async hydrateFromIndexedDB(): Promise<void> {
+    const revisionAtStart = this.revision;
     const idbState = await readFromIDB();
-    if (idbState && Array.isArray(idbState.checkIns)) {
+    if (idbState && Array.isArray(idbState.checkIns) && this.revision === revisionAtStart) {
       this.state = this.mergeWithDefaults(idbState);
       applyDailyResetIfNeeded(this.state);
       this.emit();
@@ -372,6 +392,7 @@ export class AnchorStore {
   }
 
   private persist(): void {
+    this.revision++;
     try {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
@@ -420,6 +441,7 @@ export class AnchorStore {
       remainingSec: sec,
       running: false,
       startedAt: null,
+      deadlineAt: null,
       label: label ?? `${minutes}m Focus`,
     };
     this.emit();

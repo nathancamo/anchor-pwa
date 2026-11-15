@@ -1,13 +1,14 @@
 {
   "name": "Anchor — Memory & Focus",
   "short_name": "Anchor",
+  "id": "./",
   "description": "Gentle, zero-friction daily memory anchors, timestamped check-ins, and ADHD focus support.",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#000000",
-  "theme_color": "#0A84FF",
+  "background_color": "#F2F2F7",
+  "theme_color": "#F2F2F7",
   "icons": [
     {
       "src": "./icons/icon-192.png",

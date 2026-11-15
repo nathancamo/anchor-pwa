@@ -2,11 +2,27 @@ import { describe, it, expect } from 'vitest';
 import {
   AnchorStore,
   createDefaultState,
+  getTimerRemainingSec,
   getLogicalDateKey,
   isTimestampInLogicalToday,
 } from '../src/store';
 
 describe('AnchorStore & Memory/ADHD Logic', () => {
+  it('derives focus timer time from its start timestamp after background suspension', () => {
+    const timer = {
+      durationSec: 900,
+      remainingSec: 600,
+      running: true,
+      startedAt: 1_000,
+      deadlineAt: 601_000,
+      label: '15m Focus Sprint',
+    };
+
+    expect(getTimerRemainingSec(timer, 31_000)).toBe(570);
+    expect(getTimerRemainingSec(timer, 601_000)).toBe(0);
+    expect(getTimerRemainingSec({ ...timer, running: false }, 601_000)).toBe(600);
+  });
+
   it('treats late-night hours before dailyResetHour as the same logical day', () => {
     // 2026-11-13 01:30 AM local time
     const lateNight = new Date(2026, 10, 13, 1, 30, 0).getTime();

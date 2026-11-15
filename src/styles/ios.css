@@ -154,6 +154,17 @@ select:focus-visible {
   color: var(--ios-text-secondary);
 }
 
+.connection-status {
+  margin-top: 3px;
+  color: var(--ios-orange);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.connection-status[hidden] {
+  display: none;
+}
+
 .ios-navbar-title {
   margin: 0;
   font-size: 26px;
@@ -758,6 +769,16 @@ dialog::backdrop {
     max-width: 100%;
     border-radius: 22px 22px 0 0;
     max-height: 90dvh;
+  }
+}
+
+@media (pointer: coarse) {
+  .ios-btn-sm {
+    min-height: 40px;
+  }
+
+  .tab-btn {
+    min-height: 44px;
   }
 }
 

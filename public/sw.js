@@ -1,4 +1,4 @@
-const CACHE_NAME = 'anchor-pwa-v2';
+const CACHE_NAME = 'anchor-pwa-v3';
 const APP_SHELL = [
   './',
   './index.html',
@@ -20,7 +20,7 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
+        keys.filter((k) => k.startsWith('anchor-pwa-') && k !== CACHE_NAME).map((k) => caches.delete(k))
       )
     )
   );
@@ -39,21 +39,25 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((res) => {
           const copy = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.put(request, copy)));
           return res;
         })
-        .catch(() => caches.match('./index.html'))
+        .catch(async () => {
+          const cache = await caches.open(CACHE_NAME);
+          return (await cache.match(request)) || cache.match('./index.html');
+        })
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((cached) => {
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cached = await cache.match(request);
       const fetchPromise = fetch(request)
         .then((res) => {
           if (res && res.status === 200) {
             const copy = res.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+            event.waitUntil(cache.put(request, copy));
           }
           return res;
         })

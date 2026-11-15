@@ -1,5 +1,5 @@
 import './styles/ios.css';
-import { AnchorStore, isTimestampInLogicalToday } from './store';
+import { AnchorStore, getTimerRemainingSec, isTimestampInLogicalToday } from './store';
 import type { AnchorAppState, TabId } from './types';
 import { playGentleChime } from './audio';
 import { formatClockMMSS, formatElapsed } from './utils/dom';
@@ -39,6 +39,7 @@ appRoot.innerHTML = `
       <div class="ios-navbar-title-group">
         <span class="ios-navbar-subtitle" id="nav-date-subtitle"></span>
         <h1 class="ios-navbar-title" id="nav-title">Anchor</h1>
+        <span class="connection-status" id="connection-status" role="status" hidden>Offline · changes stay on this iPhone</span>
       </div>
       <div class="ios-navbar-actions">
         <button type="button" class="ios-icon-btn" id="btn-open-install" aria-label="Get on iPhone or share">📲</button>
@@ -82,6 +83,15 @@ const navTitleEl = appRoot.querySelector<HTMLElement>('#nav-title')!;
 const navSubEl = appRoot.querySelector<HTMLElement>('#nav-date-subtitle')!;
 const toastEl = appRoot.querySelector<HTMLElement>('#ios-toast')!;
 const modalsRoot = appRoot.querySelector<HTMLElement>('#modals-root')!;
+const connectionStatusEl = appRoot.querySelector<HTMLElement>('#connection-status')!;
+
+function updateConnectionStatus(): void {
+  connectionStatusEl.hidden = navigator.onLine;
+}
+
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+updateConnectionStatus();
 
 let toastTimer: number | undefined;
 function showToast(msg: string): void {
@@ -222,8 +232,7 @@ if (params.get('action') === 'capture') {
   modals.openCapture();
 }
 
-// 1-second tick for Focus Timer & Anchor elapsed label
-window.setInterval(() => {
+function updateLiveStatus(): void {
   store.checkDailyReset();
   const state = store.getState();
 
@@ -233,13 +242,12 @@ window.setInterval(() => {
   }
 
   if (state.timer.running) {
-    const nextRem = state.timer.remainingSec - 1;
+    const nextRem = getTimerRemainingSec(state.timer);
     if (nextRem <= 0) {
-      store.updateTimer({ running: false, remainingSec: 0, startedAt: null });
+      store.updateTimer({ running: false, remainingSec: 0, startedAt: null, deadlineAt: null });
       playGentleChime(state.settings.soundEnabled);
       showToast('Focus block complete! Take a breath.');
     } else {
-      store.updateTimer({ remainingSec: nextRem }, true);
       const clockEl = document.querySelector('#timer-clock-text');
       const circleEl = document.querySelector<SVGCircleElement>('#timer-ring-circle');
       if (clockEl) clockEl.textContent = formatClockMMSS(nextRem);
@@ -251,4 +259,9 @@ window.setInterval(() => {
       }
     }
   }
-}, 1000);
+}
+
+window.setInterval(updateLiveStatus, 1000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) updateLiveStatus();
+});

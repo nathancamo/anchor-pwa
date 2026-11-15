@@ -419,6 +419,9 @@ export function mountModals(
     openInstallShare: async () => {
       const body = root.querySelector('#sheet-install-body')!;
       const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+      const standalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
       let qrSvg = '';
       try {
         qrSvg = await QRCode.toString(cleanUrl, {
@@ -431,31 +434,57 @@ export function mountModals(
         qrSvg = '';
       }
 
+      const copyLink = async (): Promise<void> => {
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(cleanUrl);
+          } else {
+            const input = document.createElement('textarea');
+            input.value = cleanUrl;
+            input.setAttribute('readonly', '');
+            input.style.position = 'fixed';
+            input.style.opacity = '0';
+            document.body.appendChild(input);
+            input.select();
+            const copied = document.execCommand('copy');
+            input.remove();
+            if (!copied) throw new Error('Clipboard copy was not available');
+          }
+          showToast('Link copied!');
+        } catch {
+          showToast('Could not copy the link. Use Share → Copy instead.');
+        }
+      };
+
       body.innerHTML = `
         <div class="sheet-grabber" aria-hidden="true"></div>
         <div class="sheet-header">
-          <h2 id="sheet-install-title" class="sheet-title">Get Anchor on iPhone</h2>
+          <h2 id="sheet-install-title" class="sheet-title">${standalone ? 'Share Anchor' : 'Get Anchor on iPhone'}</h2>
           <form method="dialog"><button class="ios-btn ios-btn-gray ios-btn-sm" value="cancel" autofocus>Done</button></form>
         </div>
 
         <div style="display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--ios-fill); border-radius:16px; padding:16px;">
-          <div style="background:#ffffff; padding:10px; border-radius:14px; line-height:0; box-shadow:0 2px 10px rgba(0,0,0,0.08);">
-            ${qrSvg}
-          </div>
+          ${qrSvg ? `<div style="background:#ffffff; padding:10px; border-radius:14px; line-height:0; box-shadow:0 2px 10px rgba(0,0,0,0.08);">${qrSvg}</div>` : '<div class="ios-row-meta">QR code unavailable. Share or copy the link below.</div>'}
           <div style="font-size:13px; color:var(--ios-text-secondary); text-align:center;">
-            Point Brad’s iPhone Camera at this QR code to open Anchor in Safari
+            Point your iPhone Camera at this QR code to open Anchor in Safari
           </div>
         </div>
 
-        <div class="ios-card" style="padding:14px; background:var(--ios-fill); display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:1.4;">
-          <div style="font-weight:700; font-size:15px;">Install as a Native App (2 Taps):</div>
-          <div>1. Open in <b>Safari</b> on iPhone</div>
-          <div>2. Tap the <b>Share</b> button (square with arrow ↑) at the bottom</div>
-          <div>3. Tap <b>Add to Home Screen</b> — it appears as a full-screen app!</div>
-        </div>
+        ${standalone ? `
+          <div class="ios-card ios-card-padded" style="background:var(--ios-fill); font-size:14px; line-height:1.4;">
+            Anchor is installed on this device. Share the link to open it on another iPhone.
+          </div>
+        ` : `
+          <div class="ios-card" style="padding:14px; background:var(--ios-fill); display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:1.4;">
+            <div style="font-weight:700; font-size:15px;">Install on iPhone:</div>
+            <div>1. Open this link in <b>Safari</b></div>
+            <div>2. Tap the <b>Share</b> button (square with arrow ↑)</div>
+            <div>3. Tap <b>Add to Home Screen</b> for full-screen offline access</div>
+          </div>
+        `}
 
         <div style="display:flex; gap:8px;">
-          <button type="button" class="ios-btn ios-btn-primary" id="btn-share-link" style="flex:1;">Share / Text Link</button>
+          <button type="button" class="ios-btn ios-btn-primary" id="btn-share-link" style="flex:1;">Share Link</button>
           <button type="button" class="ios-btn ios-btn-gray" id="btn-copy-link">Copy URL</button>
         </div>
       `;
@@ -465,21 +494,19 @@ export function mountModals(
           try {
             await navigator.share({
               title: 'Anchor — Daily Memory & Focus',
-              text: 'Open this in Safari and tap Share → Add to Home Screen:',
+              text: standalone ? 'Open Anchor on your iPhone:' : 'Open this in Safari and tap Share → Add to Home Screen:',
               url: cleanUrl,
             });
             return;
-          } catch {
-            // User cancelled or share failed; fallback to copy
+          } catch (error) {
+            if (error instanceof DOMException && error.name === 'AbortError') return;
           }
         }
-        await navigator.clipboard?.writeText(cleanUrl);
-        showToast('Link copied! Paste in iMessage to Brad');
+        await copyLink();
       });
 
       body.querySelector('#btn-copy-link')?.addEventListener('click', async () => {
-        await navigator.clipboard?.writeText(cleanUrl);
-        showToast('Link copied!');
+        await copyLink();
       });
 
       dInstall.showModal();

@@ -1,3 +1,4 @@
+import { getTimerRemainingSec } from '../store';
 import type { AnchorStore } from '../store';
 import type { AnchorAppState } from '../types';
 import { playGentleChime, playRefocusNudge, playTapConfirm } from '../audio';
@@ -16,12 +17,13 @@ export function renderNowView(
   cb: NowViewCallbacks
 ): void {
   const { anchor, timer, tasks, settings } = state;
+  const timerRemainingSec = getTimerRemainingSec(timer);
   const top3 = tasks.filter((t) => t.bucket === 'top3' && (settings.showCompletedTasks || !t.done));
   const activeTop3Count = tasks.filter((t) => t.bucket === 'top3' && !t.done).length;
 
   const radius = 37;
   const circumference = 2 * Math.PI * radius;
-  const pct = timer.durationSec > 0 ? timer.remainingSec / timer.durationSec : 1;
+  const pct = timer.durationSec > 0 ? timerRemainingSec / timer.durationSec : 1;
   const dashOffset = circumference * (1 - Math.max(0, Math.min(1, pct)));
 
   container.innerHTML = `
@@ -58,7 +60,7 @@ export function renderNowView(
               stroke-dashoffset="${dashOffset}"
             ></circle>
           </svg>
-          <span class="timer-clock" id="timer-clock-text">${formatClockMMSS(timer.remainingSec)}</span>
+          <span class="timer-clock" id="timer-clock-text" aria-label="Time remaining">${formatClockMMSS(timerRemainingSec)}</span>
         </div>
         <div class="timer-info">
           <div class="timer-presets" role="group" aria-label="Timer duration presets">
@@ -155,13 +157,20 @@ export function renderNowView(
   container.querySelector('#btn-timer-toggle')?.addEventListener('click', () => {
     const cur = store.getState().timer;
     if (cur.running) {
-      store.updateTimer({ running: false, startedAt: null });
+      store.updateTimer({
+        running: false,
+        remainingSec: getTimerRemainingSec(cur),
+        startedAt: null,
+        deadlineAt: null,
+      });
     } else {
       const remaining = cur.remainingSec <= 0 ? cur.durationSec : cur.remainingSec;
+      const startedAt = Date.now();
       store.updateTimer({
         running: true,
         remainingSec: remaining,
-        startedAt: Date.now(),
+        startedAt,
+        deadlineAt: startedAt + remaining * 1000,
       });
     }
   });
@@ -172,6 +181,7 @@ export function renderNowView(
       running: false,
       remainingSec: cur.durationSec,
       startedAt: null,
+      deadlineAt: null,
     });
   });
 

@@ -13,6 +13,7 @@ export interface FocusTimerState {
   remainingSec: number;
   running: boolean;
   startedAt: number | null;
+  deadlineAt: number | null;
   label: string;
 }
 
