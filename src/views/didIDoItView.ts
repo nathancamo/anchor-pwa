@@ -3,6 +3,7 @@ import type { AnchorStore } from '../store';
 import type { AnchorAppState, CheckInItem, Routine } from '../types';
 import { playGentleChime, playTapConfirm } from '../audio';
 import { escapeHtml } from '../utils/dom';
+import { renderIconToken } from '../utils/icons';
 
 export interface DidIDoItCallbacks {
   onOpenGuidedRoutine: (routine: Routine) => void;
@@ -43,7 +44,7 @@ export function renderDidIDoItView(
             return `
             <div class="checkin-card ${doneToday ? 'done-today' : ''}" data-checkin-card="${item.id}">
               <div class="checkin-top">
-                <span class="checkin-icon" aria-hidden="true">${escapeHtml(item.icon)}</span>
+                <span class="checkin-icon" data-category="${item.category}">${renderIconToken(item.icon, 21)}</span>
                 <span class="checkin-status-pill">${doneToday ? 'YES ✓' : 'NOT YET'}</span>
               </div>
               <div class="checkin-title">${escapeHtml(item.title)}</div>
@@ -78,7 +79,7 @@ export function renderDidIDoItView(
             <div class="ios-card">
               <div class="ios-list-row" style="justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                  <span style="font-size:22px;">${escapeHtml(r.icon)}</span>
+                  <span class="routine-icon">${renderIconToken(r.icon, 21)}</span>
                   <div>
                     <div class="ios-row-title" style="font-weight:700;">${escapeHtml(r.title)}</div>
                     <div class="ios-row-meta">${doneCount} of ${total} steps done</div>

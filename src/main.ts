@@ -3,6 +3,7 @@ import { AnchorStore, getTimerRemainingSec, isTimestampInLogicalToday } from './
 import type { AnchorAppState, TabId } from './types';
 import { playGentleChime } from './audio';
 import { formatClockMMSS, formatElapsed } from './utils/dom';
+import { renderIcon } from './utils/icons';
 import { renderNowView } from './views/nowView';
 import { renderDidIDoItView } from './views/didIDoItView';
 import { renderVaultView } from './views/vaultView';
@@ -42,8 +43,8 @@ appRoot.innerHTML = `
         <span class="connection-status" id="connection-status" role="status" hidden>Offline · changes stay on this iPhone</span>
       </div>
       <div class="ios-navbar-actions">
-        <button type="button" class="ios-icon-btn" id="btn-open-install" aria-label="Get on iPhone or share">📲</button>
-        <button type="button" class="ios-icon-btn" id="btn-open-settings" aria-label="Settings and backup">⚙️</button>
+        <button type="button" class="ios-icon-btn" id="btn-open-install" aria-label="Get on iPhone or share">${renderIcon('share', 19)}</button>
+        <button type="button" class="ios-icon-btn" id="btn-open-settings" aria-label="Settings and backup">${renderIcon('settings', 19)}</button>
       </div>
     </header>
 
@@ -55,20 +56,20 @@ appRoot.innerHTML = `
 
     <nav class="ios-tabbar" aria-label="Main navigation">
       <button type="button" class="tab-btn" data-tab="now">
-        <span class="tab-icon" aria-hidden="true">⚓</span>
+        <span class="tab-icon">${renderIcon('anchor', 22)}</span>
         <span>Now</span>
       </button>
       <button type="button" class="tab-btn" data-tab="did-i">
-        <span class="tab-icon" aria-hidden="true">✅</span>
+        <span class="tab-icon">${renderIcon('check-circle', 22)}</span>
         <span>Did I?</span>
         <span class="tab-badge" id="badge-didi" hidden>0</span>
       </button>
       <button type="button" class="tab-btn" data-tab="memory">
-        <span class="tab-icon" aria-hidden="true">🧠</span>
+        <span class="tab-icon">${renderIcon('brain', 22)}</span>
         <span>Memory</span>
       </button>
       <button type="button" class="tab-btn" data-tab="inbox">
-        <span class="tab-icon" aria-hidden="true">📥</span>
+        <span class="tab-icon">${renderIcon('inbox', 22)}</span>
         <span>Dump</span>
         <span class="tab-badge" id="badge-inbox" hidden>0</span>
       </button>

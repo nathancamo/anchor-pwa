@@ -180,10 +180,11 @@ select:focus-visible {
 }
 
 .ios-icon-btn {
-  min-width: 40px;
-  min-height: 40px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: var(--radius-pill);
   background: var(--ios-fill);
+  border: 1px solid color-mix(in srgb, var(--ios-separator) 45%, transparent);
   color: var(--ios-blue);
   display: inline-flex;
   align-items: center;
@@ -257,7 +258,8 @@ select:focus-visible {
   background: var(--ios-card);
   border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: 1px solid color-mix(in srgb, var(--ios-separator) 42%, transparent);
+  box-shadow: 0 2px 8px rgba(20, 32, 54, 0.045);
 }
 
 .ios-card-padded {
@@ -294,6 +296,10 @@ select:focus-visible {
   background: color-mix(in srgb, var(--ios-blue) 14%, transparent);
   padding: 4px 10px;
   border-radius: var(--radius-pill);
+}
+
+.anchor-badge .ui-icon {
+  stroke-width: 2;
 }
 
 .anchor-elapsed {
@@ -547,8 +553,44 @@ select:focus-visible {
 }
 
 .checkin-icon {
-  font-size: 24px;
-  line-height: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  color: var(--ios-blue);
+  background: color-mix(in srgb, var(--ios-blue) 11%, var(--ios-card));
+}
+
+.checkin-icon[data-category="meds"] {
+  color: var(--ios-indigo);
+  background: color-mix(in srgb, var(--ios-indigo) 11%, var(--ios-card));
+}
+
+.checkin-icon[data-category="safety"] {
+  color: var(--ios-orange);
+  background: color-mix(in srgb, var(--ios-orange) 12%, var(--ios-card));
+}
+
+.checkin-icon[data-category="pet"],
+.checkin-icon[data-category="selfcare"] {
+  color: var(--ios-green);
+  background: color-mix(in srgb, var(--ios-green) 11%, var(--ios-card));
+}
+
+.checkin-icon[data-category="home"] {
+  color: var(--ios-blue);
+}
+
+.routine-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  color: var(--ios-indigo);
+  background: color-mix(in srgb, var(--ios-indigo) 11%, var(--ios-card));
 }
 
 .checkin-status-pill {
@@ -716,8 +758,79 @@ select:focus-visible {
 }
 
 .tab-icon {
-  font-size: 21px;
-  line-height: 1.1;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+
+.ui-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+}
+
+.user-icon-fallback {
+  display: inline-block;
+  filter: grayscale(1);
+  opacity: 0.78;
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+.icon-heading,
+.tag-heading,
+.parking-memory,
+.bucket-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-heading {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.icon-heading .ui-icon,
+.parking-memory .ui-icon,
+.pinned-icon {
+  color: var(--ios-blue);
+}
+
+.tag-heading {
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tag-heading span {
+  min-width: 0;
+}
+
+.parking-memory {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.bucket-meta .ui-icon {
+  color: var(--ios-blue);
+}
+
+.voice-button {
+  min-width: 44px;
+  padding: 0 12px;
+}
+
+.voice-button.recording {
+  color: var(--ios-red);
+  background: color-mix(in srgb, var(--ios-red) 12%, transparent);
+}
+
+.guided-success-icon {
+  color: var(--ios-green);
+  display: flex;
+  justify-content: center;
 }
 
 .tab-badge {

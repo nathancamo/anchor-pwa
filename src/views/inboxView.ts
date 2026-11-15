@@ -3,6 +3,7 @@ import type { AnchorAppState } from '../types';
 import { playTapConfirm } from '../audio';
 import { isSpeechSupported, startVoiceDictation } from '../speech';
 import { escapeHtml } from '../utils/dom';
+import { renderIcon } from '../utils/icons';
 
 export interface InboxViewCallbacks {
   onShowToast: (msg: string) => void;
@@ -36,7 +37,7 @@ export function renderInboxView(
         <input type="text" id="inbox-capture-input" class="ios-input" placeholder="Get it out of your head…" aria-label="Brain dump task" />
         ${
           voiceOk
-            ? `<button type="button" class="ios-btn ios-btn-tinted" id="btn-inbox-voice" aria-label="Voice brain dump">🎙️</button>`
+            ? `<button type="button" class="ios-btn ios-btn-tinted voice-button" id="btn-inbox-voice" aria-label="Voice brain dump">${renderIcon('mic', 19)}</button>`
             : ''
         }
         <button type="submit" class="ios-btn ios-btn-primary">Dump</button>
@@ -73,7 +74,7 @@ export function renderInboxView(
             >${t.done ? '✓' : ''}</button>
             <div class="ios-row-body">
               <div class="ios-row-title ${t.done ? 'done' : ''}">${escapeHtml(t.title)}</div>
-              <div class="ios-row-meta">${t.bucket === 'top3' ? '⭐ In Today’s Top 3' : t.bucket === 'parked' ? '🅿️ Parked for later' : 'Inbox'}</div>
+              <div class="ios-row-meta bucket-meta">${t.bucket === 'top3' ? `${renderIcon('sparkles', 14)} In Today’s Top 3` : t.bucket === 'parked' ? `${renderIcon('pin', 14)} Parked for later` : 'Inbox'}</div>
             </div>
             <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
               ${
@@ -86,7 +87,7 @@ export function renderInboxView(
                   ? `<button type="button" class="ios-btn ios-btn-gray ios-btn-sm" data-focus-inbox="${t.id}">Now</button>`
                   : ''
               }
-              <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-task="${t.id}" aria-label="Delete task">✕</button>
+              <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-task="${t.id}" aria-label="Delete task">${renderIcon('x', 16)}</button>
             </div>
           </div>
         `
@@ -108,7 +109,7 @@ export function renderInboxView(
 
   container.querySelector('#btn-inbox-voice')?.addEventListener('click', () => {
     const btn = container.querySelector<HTMLButtonElement>('#btn-inbox-voice');
-    if (btn) btn.textContent = '⏺️';
+    btn?.classList.add('recording');
     startVoiceDictation({
       onTranscript: (text) => {
         store.addTask(text, 'later');
@@ -117,7 +118,7 @@ export function renderInboxView(
       },
       onError: (msg) => cb.onShowToast(msg),
       onEnd: () => {
-        if (btn) btn.textContent = '🎙️';
+        btn?.classList.remove('recording');
       },
     });
   });

@@ -3,6 +3,7 @@ import type { AnchorStore } from '../store';
 import type { AnchorAppState } from '../types';
 import { playGentleChime, playRefocusNudge, playTapConfirm } from '../audio';
 import { escapeHtml, formatClockMMSS, formatElapsed } from '../utils/dom';
+import { renderIcon } from '../utils/icons';
 
 export interface NowViewCallbacks {
   onOpenAnchorModal: () => void;
@@ -29,7 +30,7 @@ export function renderNowView(
   container.innerHTML = `
     <section class="anchor-card" aria-labelledby="anchor-heading">
       <div class="anchor-badge-row">
-        <span class="anchor-badge">⚓ Right Now</span>
+        <span class="anchor-badge">${renderIcon('anchor', 15)} Right Now</span>
         <span class="anchor-elapsed" id="anchor-elapsed-text">${escapeHtml(formatElapsed(anchor.startedAt))}</span>
       </div>
       <h2 class="anchor-title" id="anchor-heading">${escapeHtml(anchor.title)}</h2>
@@ -37,7 +38,7 @@ export function renderNowView(
       <div class="anchor-actions">
         <button type="button" class="ios-btn ios-btn-primary ios-btn-sm" id="btn-change-anchor">Change</button>
         <button type="button" class="ios-btn ios-btn-tinted ios-btn-sm" id="btn-refocus-anchor">Got Distracted — Refocus</button>
-        <button type="button" class="ios-btn ios-btn-success ios-btn-sm" id="btn-done-anchor">Done ✓</button>
+        <button type="button" class="ios-btn ios-btn-success ios-btn-sm" id="btn-done-anchor">Done ${renderIcon('check', 16)}</button>
       </div>
     </section>
 

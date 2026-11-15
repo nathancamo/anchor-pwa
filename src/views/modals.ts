@@ -5,6 +5,7 @@ import { playGentleChime, playTapConfirm } from '../audio';
 import { isSpeechSupported, startVoiceDictation } from '../speech';
 import { wireDialogHelpers } from '../utils/dialogHelpers';
 import { escapeHtml } from '../utils/dom';
+import { renderIcon } from '../utils/icons';
 
 export interface ModalController {
   openCapture: () => void;
@@ -35,7 +36,7 @@ export function mountModals(
         <form id="form-quick-capture" style="display:flex; flex-direction:column; gap:10px;">
           <div style="display:flex; gap:8px;">
             <input id="qc-input" class="ios-input" type="text" placeholder="Type or speak before it slips…" autofocus required />
-            ${voiceOk ? `<button type="button" id="qc-voice" class="ios-btn ios-btn-tinted" aria-label="Speak">🎙️</button>` : ''}
+            ${voiceOk ? `<button type="button" id="qc-voice" class="ios-btn ios-btn-tinted voice-button" aria-label="Speak">${renderIcon('mic', 19)}</button>` : ''}
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <label style="flex:1; min-width:120px;">
@@ -83,7 +84,14 @@ export function mountModals(
         <form id="form-add-checkin" style="display:flex; flex-direction:column; gap:10px;">
           <input id="ci-title" class="ios-input" type="text" placeholder="e.g. Fed the dog, Locked back gate" autofocus required />
           <div style="display:flex; gap:8px;">
-            <input id="ci-icon" class="ios-input" type="text" value="✅" maxlength="4" style="width:72px; text-align:center;" aria-label="Emoji icon" />
+            <select id="ci-icon" class="ios-select" aria-label="Icon">
+              <option value="check-circle">Check</option>
+              <option value="pill">Medication</option>
+              <option value="drop">Water</option>
+              <option value="home">Home</option>
+              <option value="paw">Pet</option>
+              <option value="shield-check">Safety</option>
+            </select>
             <select id="ci-cat" class="ios-select" aria-label="Category">
               <option value="selfcare">Self-Care</option>
               <option value="meds">Meds</option>
@@ -180,14 +188,14 @@ export function mountModals(
   root.querySelector('#qc-voice')?.addEventListener('click', () => {
     const btn = root.querySelector<HTMLButtonElement>('#qc-voice')!;
     const inp = root.querySelector<HTMLInputElement>('#qc-input')!;
-    btn.textContent = '⏺️';
+    btn.classList.add('recording');
     startVoiceDictation({
       onTranscript: (text) => {
         inp.value = inp.value ? `${inp.value} ${text}` : text;
       },
       onError: (msg) => showToast(msg),
       onEnd: () => {
-        btn.textContent = '🎙️';
+        btn.classList.remove('recording');
       },
     });
   });
@@ -208,7 +216,7 @@ export function mountModals(
   root.querySelector('#form-add-checkin')?.addEventListener('submit', (e) => {
     e.preventDefault();
     const titleEl = root.querySelector<HTMLInputElement>('#ci-title')!;
-    const iconEl = root.querySelector<HTMLInputElement>('#ci-icon')!;
+    const iconEl = root.querySelector<HTMLSelectElement>('#ci-icon')!;
     const catEl = root.querySelector<HTMLSelectElement>('#ci-cat')!;
     store.addCheckIn(titleEl.value, iconEl.value, catEl.value as never);
     titleEl.value = '';
@@ -266,7 +274,7 @@ export function mountModals(
         allDone
           ? `
         <div class="guided-step-box">
-          <div style="font-size:38px;">🎉</div>
+          <div class="guided-success-icon">${renderIcon('sparkles', 38)}</div>
           <div class="guided-step-text">All ${routine.steps.length} steps complete!</div>
           <p class="ios-row-meta" style="margin:0;">You did every step. No second-guessing needed.</p>
         </div>

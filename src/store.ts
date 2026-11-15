@@ -539,13 +539,13 @@ export class AnchorStore {
     this.emit();
   }
 
-  addCheckIn(title: string, icon = '✅', category: CheckInCategory = 'selfcare'): void {
+  addCheckIn(title: string, icon = 'check-circle', category: CheckInCategory = 'selfcare'): void {
     const clean = title.trim();
     if (!clean) return;
     this.state.checkIns.push({
       id: uid('ci'),
       title: clean,
-      icon: icon.trim() || '✅',
+      icon: icon.trim() || 'check-circle',
       category,
       lastDoneAt: null,
       history: [],
@@ -636,7 +636,7 @@ export class AnchorStore {
     const r: Routine = {
       id: uid('rt'),
       title: clean,
-      icon: icon.trim() || '📋',
+      icon: icon.trim() || 'inbox',
       lastCompletedAt: null,
       steps: steps.map((text) => ({ id: uid('st'), text, done: false })),
     };

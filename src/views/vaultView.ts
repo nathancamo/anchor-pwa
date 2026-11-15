@@ -4,6 +4,7 @@ import type { AnchorAppState, MemoryCategory } from '../types';
 import { playTapConfirm } from '../audio';
 import { isSpeechSupported, startVoiceDictation } from '../speech';
 import { escapeHtml } from '../utils/dom';
+import { renderIcon } from '../utils/icons';
 
 export interface VaultViewCallbacks {
   onOpenAddMemory: () => void;
@@ -49,7 +50,7 @@ export function renderVaultView(
       <div class="ios-card ios-card-padded" style="display:flex; flex-direction:column; gap:12px;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
           <div>
-            <div style="font-size:16px; font-weight:700;">📡 Locate or Ring Temu Smart Tag</div>
+            <div class="icon-heading">${renderIcon('pin', 18)}<span>Locate or Ring Temu Smart Tag</span></div>
             <div class="ios-row-meta" style="margin-top:2px;">
               Google Find Hub is end-to-end encrypted (no 3rd-party API), so live map &amp; ring open directly in Google’s secure portal.
             </div>
@@ -60,7 +61,7 @@ export function renderVaultView(
             rel="noopener noreferrer"
             class="ios-btn ios-btn-primary ios-btn-sm"
             style="text-decoration:none;"
-          >Open Find Hub ↗</a>
+          >Open Find Hub ${renderIcon('external-link', 15)}</a>
         </div>
 
         ${
@@ -72,7 +73,7 @@ export function renderVaultView(
                     (tag) => `
                   <div style="background:var(--ios-fill); border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
                     <div style="min-width:0; flex:1;">
-                      <div style="font-size:15px; font-weight:700;">🏷️ ${escapeHtml(tag.name)} · ${escapeHtml(tag.attachedTo)}</div>
+                      <div class="tag-heading">${renderIcon('tag', 16)}<span>${escapeHtml(tag.name)} · ${escapeHtml(tag.attachedTo)}</span></div>
                       <div class="ios-row-meta">${escapeHtml(tag.lastNote)}</div>
                     </div>
                     <div style="display:flex; gap:6px;">
@@ -82,8 +83,8 @@ export function renderVaultView(
                         rel="noopener noreferrer"
                         class="ios-btn ios-btn-tinted ios-btn-sm"
                         style="text-decoration:none;"
-                      >Ring / Map</a>
-                      <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-tag="${tag.id}" aria-label="Remove ${escapeHtml(tag.name)}">✕</button>
+                      >Ring / Map ${renderIcon('external-link', 14)}</a>
+                      <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-tag="${tag.id}" aria-label="Remove ${escapeHtml(tag.name)}">${renderIcon('x', 16)}</button>
                     </div>
                   </div>
                 `
@@ -99,8 +100,8 @@ export function renderVaultView(
         <h2 class="section-title" id="car-stamp-heading">Quick Car Parking Stamp</h2>
       </div>
       <div class="ios-card ios-card-padded" style="display:flex; flex-direction:column; gap:10px;">
-        <div style="font-size:15px; font-weight:600;">
-          🚗 ${escapeHtml(carMemory ? carMemory.answer : 'Tap a preset or type where you parked')}
+        <div class="parking-memory">
+          ${renderIcon('car', 20)}<span>${escapeHtml(carMemory ? carMemory.answer : 'Tap a preset or type where you parked')}</span>
         </div>
         <div class="filter-pills">
           <button type="button" class="preset-chip" data-car-preset="Level 1">Level 1</button>
@@ -151,7 +152,7 @@ export function renderVaultView(
             <div class="ios-list-row" style="align-items:flex-start;">
               <div class="ios-row-body">
                 <div class="ios-row-title" style="font-weight:700;">
-                  ${m.pinned ? '📌 ' : ''}${escapeHtml(m.title)}
+                  ${m.pinned ? `${renderIcon('pin', 15, 'ui-icon pinned-icon')} ` : ''}${escapeHtml(m.title)}
                 </div>
                 <div style="font-size:15px; margin-top:3px;">${escapeHtml(m.answer)}</div>
                 <div class="ios-row-meta">Updated ${escapeHtml(formatRelativeDayTime(m.updatedAt, Date.now(), state.settings.dailyResetHour))}</div>
@@ -161,7 +162,7 @@ export function renderVaultView(
                   ${m.pinned ? 'Unpin' : 'Pin'}
                 </button>
                 <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-mem="${m.id}" aria-label="Delete ${escapeHtml(m.title)}">
-                  ✕
+                  ${renderIcon('x', 16)}
                 </button>
               </div>
             </div>
@@ -181,7 +182,7 @@ export function renderVaultView(
         <input type="text" id="note-quick-input" class="ios-input" placeholder="Jot down a thought before it slips…" aria-label="Quick thought note" />
         ${
           voiceOk
-            ? `<button type="button" class="ios-btn ios-btn-tinted" id="btn-note-voice" aria-label="Dictate thought">🎙️</button>`
+            ? `<button type="button" class="ios-btn ios-btn-tinted voice-button" id="btn-note-voice" aria-label="Dictate thought">${renderIcon('mic', 19)}</button>`
             : ''
         }
         <button type="submit" class="ios-btn ios-btn-primary">Save</button>
@@ -198,7 +199,7 @@ export function renderVaultView(
               <div class="ios-row-title">${escapeHtml(n.text)}</div>
               <div class="ios-row-meta">${escapeHtml(formatRelativeDayTime(n.createdAt, Date.now(), state.settings.dailyResetHour))}</div>
             </div>
-            <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-note="${n.id}" aria-label="Delete note">✕</button>
+            <button type="button" class="ios-btn ios-btn-danger-tinted ios-btn-sm" data-del-note="${n.id}" aria-label="Delete note">${renderIcon('x', 16)}</button>
           </div>
         `
                 )
@@ -282,7 +283,7 @@ export function renderVaultView(
 
   container.querySelector('#btn-note-voice')?.addEventListener('click', () => {
     const btn = container.querySelector<HTMLButtonElement>('#btn-note-voice');
-    if (btn) btn.textContent = '⏺️';
+    btn?.classList.add('recording');
     startVoiceDictation({
       onTranscript: (text) => {
         store.addNote(text);
@@ -291,7 +292,7 @@ export function renderVaultView(
       },
       onError: (msg) => cb.onShowToast(msg),
       onEnd: () => {
-        if (btn) btn.textContent = '🎙️';
+        btn?.classList.remove('recording');
       },
     });
   });
