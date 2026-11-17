@@ -318,7 +318,7 @@ export function mountModals(
         <form method="dialog"><button class="ios-btn ios-btn-gray ios-btn-sm" value="cancel" autofocus>Done</button></form>
       </div>
 
-      <div class="ios-card" style="padding:0 14px; background:var(--ios-fill);">
+      <div class="ios-card" style="padding:0 14px; background:var(--fill);">
         <label class="setting-row">
           <span>Gentle Sound Chimes</span>
           <input type="checkbox" switch id="set-sound" ${s.soundEnabled ? 'checked' : ''} />
@@ -337,7 +337,7 @@ export function mountModals(
         <label>
           <span class="ios-row-meta" style="display:block; margin-bottom:4px;">Appearance</span>
           <select id="set-theme" class="ios-select">
-            <option value="system" ${s.theme === 'system' ? 'selected' : ''}>Auto (iOS)</option>
+            <option value="system" ${s.theme === 'system' ? 'selected' : ''}>Auto (system)</option>
             <option value="light" ${s.theme === 'light' ? 'selected' : ''}>Light</option>
             <option value="dark" ${s.theme === 'dark' ? 'selected' : ''}>Dark</option>
           </select>
@@ -471,19 +471,19 @@ export function mountModals(
           <form method="dialog"><button class="ios-btn ios-btn-gray ios-btn-sm" value="cancel" autofocus>Done</button></form>
         </div>
 
-        <div style="display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--ios-fill); border-radius:16px; padding:16px;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--fill); border-radius:16px; padding:16px;">
           ${qrSvg ? `<div style="background:#ffffff; padding:10px; border-radius:14px; line-height:0; box-shadow:0 2px 10px rgba(0,0,0,0.08);">${qrSvg}</div>` : '<div class="ios-row-meta">QR code unavailable. Share or copy the link below.</div>'}
-          <div style="font-size:13px; color:var(--ios-text-secondary); text-align:center;">
+          <div style="font-size:13px; color:var(--text-2); text-align:center;">
             Point your iPhone Camera at this QR code to open Anchor in Safari
           </div>
         </div>
 
         ${standalone ? `
-          <div class="ios-card ios-card-padded" style="background:var(--ios-fill); font-size:14px; line-height:1.4;">
+          <div class="ios-card ios-card-padded" style="background:var(--fill); font-size:14px; line-height:1.4;">
             Anchor is installed on this device. Share the link to open it on another iPhone.
           </div>
         ` : `
-          <div class="ios-card" style="padding:14px; background:var(--ios-fill); display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:1.4;">
+          <div class="ios-card" style="padding:14px; background:var(--fill); display:flex; flex-direction:column; gap:8px; font-size:14px; line-height:1.4;">
             <div style="font-weight:700; font-size:15px;">Install on iPhone:</div>
             <div>1. Open this link in <b>Safari</b></div>
             <div>2. Tap the <b>Share</b> button (square with arrow ↑)</div>
