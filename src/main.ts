@@ -1,4 +1,4 @@
-import './styles/ios.css';
+import './styles/theme.css';
 import { AnchorStore, getTimerRemainingSec, isTimestampInLogicalToday } from './store';
 import type { AnchorAppState, TabId } from './types';
 import { playGentleChime } from './audio';

@@ -49,14 +49,14 @@ export function renderDidIDoItView(
               </div>
               <div class="checkin-title">${escapeHtml(item.title)}</div>
               <div class="checkin-timestamp">${escapeHtml(formatRelativeDayTime(item.lastDoneAt, nowMs, resetHour))}</div>
-              <div style="display:flex; align-items:center; justify-content:space-between; margin-top:auto; padding-top:4px;">
+              <div class="checkin-footer">
                 <div class="history-dots" title="Last 7 days">
                   ${dots.map((hit) => `<span class="history-dot ${hit ? 'hit' : ''}"></span>`).join('')}
                 </div>
                 ${
                   doneToday
-                    ? `<button type="button" class="ios-btn ios-btn-gray ios-btn-sm" data-undo-checkin="${item.id}" style="min-height:26px; padding:0 8px; font-size:11px;">Undo</button>`
-                    : `<button type="button" class="ios-btn ios-btn-tinted ios-btn-sm" data-mark-checkin="${item.id}" style="min-height:28px; padding:0 10px; font-size:12px;">Mark Done</button>`
+                    ? `<button type="button" class="ios-btn ios-btn-gray ios-btn-sm" data-undo-checkin="${item.id}">Undo</button>`
+                    : `<button type="button" class="ios-btn ios-btn-tinted ios-btn-sm" data-mark-checkin="${item.id}">Mark Done</button>`
                 }
               </div>
             </div>

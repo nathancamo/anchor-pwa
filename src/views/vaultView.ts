@@ -71,7 +71,7 @@ export function renderVaultView(
                 ${state.smartTags
                   .map(
                     (tag) => `
-                  <div style="background:var(--ios-fill); border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                  <div style="background:var(--fill); border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
                     <div style="min-width:0; flex:1;">
                       <div class="tag-heading">${renderIcon('tag', 16)}<span>${escapeHtml(tag.name)} · ${escapeHtml(tag.attachedTo)}</span></div>
                       <div class="ios-row-meta">${escapeHtml(tag.lastNote)}</div>
